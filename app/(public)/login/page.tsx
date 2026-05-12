@@ -15,7 +15,15 @@ export default function LoginPage() {
     e.preventDefault(); setLoading(true); setError(null)
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     setLoading(false)
-    if (error) return setError(error.message)
+    if (error) {
+      if (error.message.includes('Invalid login credentials')) {
+        return setError('Email or password is incorrect.')
+      }
+      if (error.message.includes('rate limit')) {
+        return setError('Too many login attempts. Please try again in 15 minutes.')
+      }
+      return setError(error.message)
+    }
     router.push('/dashboard/bookings'); router.refresh()
   }
 

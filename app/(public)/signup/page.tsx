@@ -19,12 +19,20 @@ export default function SignupPage() {
       email, password,
       options: {
         data: { full_name: name },
-        emailRedirectTo: `${window.location.origin}/bookings`,
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
       },
     })
     setLoading(false)
-    if (error) return setError(error.message)
-    router.push('/dashboard/bookings')
+    if (error) {
+      if (error.message.includes('rate limit')) {
+        return setError('Too many signup attempts. Please try again in 15 minutes or use a different email.')
+      }
+      if (error.message.includes('already registered')) {
+        return setError('This email is already registered. Try logging in instead.')
+      }
+      return setError(error.message)
+    }
+    setError('Check your email to confirm your account, then log in.')
   }
 
   return (
