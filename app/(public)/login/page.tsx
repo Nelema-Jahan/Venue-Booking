@@ -16,7 +16,7 @@ export default function LoginPage() {
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     setLoading(false)
     if (error) return setError(error.message)
-    router.push('/bookings'); router.refresh()
+    router.push('/dashboard/bookings'); router.refresh()
   }
 
   async function google() {

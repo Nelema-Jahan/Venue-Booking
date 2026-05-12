@@ -24,7 +24,7 @@ export default function SignupPage() {
     })
     setLoading(false)
     if (error) return setError(error.message)
-    router.push('/bookings')
+    router.push('/dashboard/bookings')
   }
 
   return (

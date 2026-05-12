@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { VenueGallery } from '@/components/venue-gallery';
+import BookingForm from '@/components/booking-form';
 import type { VenueWithImages } from '@/types/database';
 
 export default async function VenueDetailPage({
@@ -21,6 +22,12 @@ export default async function VenueDetailPage({
     .eq('id', id)
     .eq('status', 'approved')
     .single();
+
+  const { data: bookings } = await supabase
+    .from('bookings')
+    .select('start_date, end_date')
+    .eq('venue_id', id)
+    .in('status', ['confirmed', 'pending'])
 
   if (!venue) return notFound();
   const v = venue as VenueWithImages;
@@ -68,17 +75,12 @@ export default async function VenueDetailPage({
         </div>
 
         {/* Booking card */}
-        <aside className="lg:sticky lg:top-24 h-fit border rounded-xl p-6 bg-card">
-          <div className="flex items-baseline gap-1">
-            <span className="text-3xl font-bold">£{v.price_per_day}</span>
-            <span className="text-muted-foreground">/ day</span>
-          </div>
-          <Button asChild className="w-full mt-4" size="lg">
-            <Link href={`/venues/${v.id}/book`}>Request to book</Link>
-          </Button>
-          <p className="text-xs text-muted-foreground mt-3 text-center">
-            You won't be charged yet
-          </p>
+        <aside className="lg:col-span-1">
+          <BookingForm
+            venueId={v.id}
+            pricePerDay={v.price_per_day}
+            bookedRanges={bookings || []}
+          />
         </aside>
       </div>
     </div>
